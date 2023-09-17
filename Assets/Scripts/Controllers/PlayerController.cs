@@ -30,23 +30,20 @@ public class PlayerController : MonoBehaviour
         controls.Turret.CounterClockwise.performed += ctx => RotateTurret(1);
         controls.Turret.CounterClockwise.canceled += ctx => RotateTurret(0);
         controls.Turret.Shoot.performed += ctx => Shoot();
-        controls.MainMenu.Pause.performed += ctx => PauseGame();
-    }
-
-    private void PauseGame()
-    {
-        GameManager.instance.UpdateGameState(GameState.Paused);
     }
 
     private void Shoot()
     {
-        var direction = ShootingPos.position - turret.transform.position;
-        BulletPoolController.instance.SpawnBullet(ShootingPos.position,direction);
+        if(GameManager.instance.score > 0 || !Constants.IsFirstEnemyDead)
+        {
+            var direction = ShootingPos.position - turret.transform.position;
+            BulletPoolController.instance.SpawnBullet(ShootingPos.position, direction);
+            GameManager.instance.UpdateScore(-1);
+        }
     }
 
     private void RotateTurret(int i)
     {
-        Debug.Log($"RotateTurret : {i} : {turret.transform.rotation}");
         rotateby = i;
     }
 

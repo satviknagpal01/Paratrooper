@@ -6,39 +6,27 @@ public class EnemyController : MonoBehaviour
     public static EnemyController instance;
     public GameObject enemyPrefab;
     public int enemyPoolSize = 16;
-    public GameObject[] enemies;
-    private int currentEnemy = 0;
 
+    private ObjectPool<Enemy> enemyPool;
     public List<Enemy> enemyOnLeft, enemyOnRight;
+    private int leftEnemyAttacking = 0, rightEnemyAttacking = 0;
 
-    void Awake()
+    private void Awake()
     {
         if (instance == null)
         {
             instance = this;
         }
-    }
 
-    void Start()
-    {
-        enemies = new GameObject[enemyPoolSize];
-        for (int i = 0; i < enemyPoolSize; i++)
-        {
-            enemies[i] = Instantiate(enemyPrefab, transform);
-            enemies[i].SetActive(false);
-        }
+        enemyPool = new ObjectPool<Enemy>(enemyPrefab.GetComponent<Enemy>(), transform, enemyPoolSize);
     }
 
     public void SpawnEnemy(Vector3 spawnPosition)
     {
-        currentEnemy++;
-        enemies[currentEnemy].transform.position = spawnPosition;
-        enemies[currentEnemy].SetActive(true);
-
-        if(currentEnemy >= enemyPoolSize - 1)
-        {
-            currentEnemy = 0;
-        }
+        Enemy enemy = enemyPool.GetObject();
+        enemy.transform.position = spawnPosition;
+        enemy.SetState(EnemyStates.Parachuting);
+        enemy.gameObject.SetActive(true);
     }
 
     private void Update()
@@ -47,28 +35,58 @@ public class EnemyController : MonoBehaviour
         {
             if (enemyOnLeft.Count > 3)
             {
-                foreach (var enemy in enemyOnLeft)
-                {
-                    StartAttackFromLeft();
-                }
+                StartAttackFromLeft();
             }
             if (enemyOnRight.Count > 3)
             {
-                foreach (var enemy in enemyOnRight)
-                {
-                    StartAttackFromRight();
-                }
+                StartAttackFromRight();
+            }
+            if(leftEnemyAttacking > 3 || rightEnemyAttacking >3)
+            {
+                GameManager.instance.UpdateGameState(GameState.GameOver);
+                Reset();
             }
         }
     }
 
     void StartAttackFromLeft()
     {
-        enemyOnLeft[0].SetState(EnemyStates.attack);
+        if (enemyOnLeft[leftEnemyAttacking].state == EnemyStates.TouchingBase)
+            leftEnemyAttacking++;
+        enemyOnLeft[leftEnemyAttacking].SetState(EnemyStates.Attacking);
     }
 
     void StartAttackFromRight()
     {
-        enemyOnRight[0].SetState(EnemyStates.attack);
+        if (enemyOnRight[rightEnemyAttacking].state == EnemyStates.TouchingBase)
+            rightEnemyAttacking++;
+        enemyOnRight[rightEnemyAttacking].SetState(EnemyStates.Attacking);
     }
+
+    public void AddEnemyOnLeft(Enemy enemy)
+    {
+        enemyOnLeft.Add(enemy);
+        enemyOnLeft.Sort((x, y) => x.transform.position.x.CompareTo(y.transform.position.x));
+        enemyOnLeft.Reverse();
+    }
+
+    public void AddEnemyOnRight(Enemy enemy)
+    {
+        enemyOnRight.Add(enemy);
+        enemyOnRight.Sort((x, y) => x.transform.position.x.CompareTo(y.transform.position.x));
+    }
+    
+    public void Reset()
+    {
+        leftEnemyAttacking = 0;
+        rightEnemyAttacking = 0;
+        foreach (var enemy in enemyOnLeft)
+        {
+            enemy.SetState(EnemyStates.Parachuting);
+        }
+        enemyPool.ReturnAllObjects();
+        enemyOnLeft.Clear();
+        enemyOnRight.Clear();
+    }
+
 }

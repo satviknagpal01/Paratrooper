@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System;
 
 public class MenuManager : MonoBehaviour
 {
@@ -11,14 +12,18 @@ public class MenuManager : MonoBehaviour
 
     [SerializeField] private TMP_Text score;
     [SerializeField] private TMP_Text highScore;
+    [SerializeField] private TMP_Text gameOverScore;
+    [SerializeField] private TMP_Text gameOverHighScore;
 
     private void Awake()
     {
         GameManager.OnGameStateChanged += GameStateChanged;
+        GameManager.OnScoreChanged += ScoreChanged;
     }
 
     private void OnDestroy()
     {
+        GameManager.OnScoreChanged -= ScoreChanged;
         GameManager.OnGameStateChanged -= GameStateChanged;
     }
 
@@ -51,7 +56,7 @@ public class MenuManager : MonoBehaviour
     {
         menu.SetActive(true);
         mainMenu.SetActive(true);
-        pauseMenu.SetActive(false);
+        //pauseMenu.SetActive(false);
         gameOverMenu.SetActive(false);
         IntroUI.SetActive(false);
     }
@@ -60,7 +65,7 @@ public class MenuManager : MonoBehaviour
     {
         menu.SetActive(true);
         mainMenu.SetActive(false);
-        pauseMenu.SetActive(false);
+        //pauseMenu.SetActive(false);
         gameOverMenu.SetActive(false);
         IntroUI.SetActive(true);
     }
@@ -68,7 +73,7 @@ public class MenuManager : MonoBehaviour
     private void PlayGame()
     {
         mainMenu.SetActive(false);
-        pauseMenu.SetActive(false);
+        //pauseMenu.SetActive(false);
         gameOverMenu.SetActive(false);
         IntroUI.SetActive(false);
         menu.SetActive(false);
@@ -78,7 +83,7 @@ public class MenuManager : MonoBehaviour
     {
         menu.SetActive(true);
         mainMenu.SetActive(false);
-        pauseMenu.SetActive(true);
+        //pauseMenu.SetActive(true);
         gameOverMenu.SetActive(false);
         IntroUI.SetActive(false);
     }
@@ -87,60 +92,14 @@ public class MenuManager : MonoBehaviour
     {
         menu.SetActive(true);
         mainMenu.SetActive(false);
-        pauseMenu.SetActive(false);
+        //pauseMenu.SetActive(false);
         gameOverMenu.SetActive(true);
         IntroUI.SetActive(false);
+        gameOverScore.text = "Your Score : " + GameManager.instance.score;
+        gameOverHighScore.text = "High Score : " + GameManager.instance.highScore;
     }
-
-    public void OnPlayButtonClicked()
+    private void ScoreChanged(int obj)
     {
-        GameManager.instance.UpdateGameState(GameState.InGame);
+        score.text = "SCORE : " + obj;
     }
-
-    public void OnPauseButtonClicked()
-    {
-        GameManager.instance.UpdateGameState(GameState.Paused);
-    }
-
-    public void OnResumeButtonClicked()
-    {
-        GameManager.instance.UpdateGameState(GameState.InGame);
-    }
-
-    public void OnRestartButtonClicked()
-    {
-        GameManager.instance.UpdateGameState(GameState.InGame);
-    }
-
-    public void OnQuitButtonClicked()
-    {
-        GameManager.instance.UpdateGameState(GameState.MainMenu);
-    }
-
-    public void OnQuitToMenuButtonClicked()
-    {
-        GameManager.instance.UpdateGameState(GameState.MainMenu);
-    }
-
-    public void OnQuitToDesktopButtonClicked()
-    {
-        Application.Quit();
-    }
-
-    public void OnIntroButtonClicked()
-    {
-        GameManager.instance.UpdateGameState(GameState.Intro);
-    }
-
-    public void OnIntroSkipButtonClicked()
-    {
-        GameManager.instance.UpdateGameState(GameState.MainMenu);
-    }
-
-    public void OnGameOverButtonClicked()
-    {
-        GameManager.instance.UpdateGameState(GameState.GameOver);
-    }
-
-
 }

@@ -37,8 +37,12 @@ public class Bullet : MonoBehaviour
     {
         if(collision.gameObject.CompareTag("Enemy"))
         {
+            if (!Constants.IsFirstEnemyDead)
+            {
+                Constants.IsFirstEnemyDead = true;
+            }
             GameManager.instance.UpdateScore(5);
-            collision.gameObject.GetComponent<Enemy>().Die();
+            collision.gameObject.GetComponent<Enemy>().Shot();
         }
     }
 
@@ -46,6 +50,10 @@ public class Bullet : MonoBehaviour
     {
         if(collision.gameObject.CompareTag("Helicopter"))
         {
+            if (!Constants.IsFirstEnemyDead)
+            {
+                Constants.IsFirstEnemyDead = true;
+            }
             GameManager.instance.UpdateScore(10);
             collision.gameObject.SetActive(false);
         }

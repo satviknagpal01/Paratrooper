@@ -11,9 +11,7 @@ public class BulletPoolController : MonoBehaviour
     public float bulletMin = -2f;
     public float bulletMax = 2f;
 
-    private GameObject[] bullets;
-    private Vector2 objectPoolPosition = new Vector2(-15f, -25f);
-    private int currentBullet = 0;
+    private ObjectPool<Bullet> bulletPool;
 
     private void Awake()
     {
@@ -21,30 +19,25 @@ public class BulletPoolController : MonoBehaviour
         {
             instance = this;
         }
+        bulletPool = new ObjectPool<Bullet>(bulletPrefab.GetComponent<Bullet>(), transform, bulletPoolSize);
     }
 
     void Start()
     {
-        bullets = new GameObject[bulletPoolSize];
-        for (int i = 0; i < bulletPoolSize; i++)
-        {
-            bullets[i] = (GameObject)Instantiate(bulletPrefab, objectPoolPosition, Quaternion.identity,transform);
-            bullets[i].SetActive(false);
-        }
     }
 
     public void SpawnBullet(Vector2 position, Vector2 direction)
     {
-        bullets[currentBullet].transform.position = position;
-        bullets[currentBullet].SetActive(true);
+        // Use the object pool to get a bullet.
+        Bullet bullet = bulletPool.GetObject();
+        bullet.transform.position = position;
+        bullet.gameObject.SetActive(true);
 
-        bullets[currentBullet].GetComponent<Bullet>().Shoot(direction);
-        currentBullet++;
-        if (currentBullet >= bulletPoolSize)
-        {
-            currentBullet = 0;
-        }
+        bullet.Shoot(direction);
     }
 
+    public void Reset()
+    {
+        bulletPool.ReturnAllObjects();
+    }
 }
-

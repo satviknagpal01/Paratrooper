@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class HelicopterController : MonoBehaviour
 {
-    //pool of helicopters
     public static HelicopterController instance;
     public GameObject helicopterPrefab;
     public int helicopterPoolSize = 5;
@@ -10,33 +9,26 @@ public class HelicopterController : MonoBehaviour
     public float spawnHeight = 5f;
     public float spawnXOffset = 5f;
     public float spawnXRange = 5f;
-    
 
-    private GameObject[] helicopters;
+    private ObjectPool<Helicopter> helicopterPool;
     private int currentHelicopter = 0;
     private float spawnTimer = 0f;
     private int spawnXPosition = 0;
     private Vector3 spawnPosition;
     private bool isSpawning = false;
 
-
-    void Awake()
+    private void Awake()
     {
         if (instance == null)
         {
             instance = this;
         }
+
+        helicopterPool = new ObjectPool<Helicopter>(helicopterPrefab.GetComponent<Helicopter>(), transform, helicopterPoolSize);
     }
 
-    void Start()
+    private void OnEnable()
     {
-        //create pool of helicopters
-        helicopters = new GameObject[helicopterPoolSize];
-        for (int i = 0; i < helicopterPoolSize; i++)
-        {
-            helicopters[i] = Instantiate(helicopterPrefab, transform);
-            helicopters[i].SetActive(false);
-        }
         StartSpawning();
     }
 
@@ -72,21 +64,16 @@ public class HelicopterController : MonoBehaviour
 
     public void SpawnHelicopter()
     {
-        Debug.Log($"Now Spawning Helicopter : {currentHelicopter}");
-        spawnXPosition = (int)Random.Range(0, 2);
-        if (spawnXPosition == 0)
-        {
-            spawnXPosition = 10;
-        }
-        else
-        {
-            spawnXPosition = -10;
-            helicopters[currentHelicopter].transform.rotation = Quaternion.Euler(0, 180, 0);
-        }
+        spawnXPosition = Random.Range(0, 2) == 0 ? -10 : 10;
+        spawnPosition = new Vector3(spawnXPosition, 4f, 0);
+        var helicopter = helicopterPool.GetObject();
+        helicopter.transform.position = spawnPosition;
 
-        spawnPosition = new Vector3(spawnXPosition, 4, 0);
-        helicopters[currentHelicopter].transform.position = spawnPosition;
-        helicopters[currentHelicopter].SetActive(true);
+        if (spawnXPosition == -10)
+            helicopter.transform.rotation = Quaternion.Euler(0, 180, 0);
+        else
+            helicopter.transform.rotation = Quaternion.Euler(0, 0, 0);
+
         currentHelicopter++;
         if (currentHelicopter >= helicopterPoolSize)
         {
@@ -94,4 +81,11 @@ public class HelicopterController : MonoBehaviour
         }
     }
 
+    public void Reset()
+    {
+        StopSpawning();
+        currentHelicopter = 0;
+        helicopterPool.ReturnAllObjects();
+        spawnTimer = 0f;
+    }
 }

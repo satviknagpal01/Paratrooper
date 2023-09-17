@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public GameState state;
     public static event Action<GameState> OnGameStateChanged;
-
+    public static event Action<int> OnScoreChanged;
 
     public int score;
     public int highScore;
@@ -28,7 +28,11 @@ public class GameManager : MonoBehaviour
 
     public void UpdateScore(int scoreToAdd)
     {
-        score += scoreToAdd;
+        if (Constants.IsFirstEnemyDead)
+        {
+            score += scoreToAdd;
+            OnScoreChanged?.Invoke(score);
+        }
     }
 
     public void UpdateGameState(GameState newState)
@@ -70,6 +74,7 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         mainGame.SetActive(false);
+        Reset();
     }
 
     private void PauseGame()
@@ -86,14 +91,13 @@ public class GameManager : MonoBehaviour
     {
         mainGame.SetActive(false);
     }
-}
 
-public enum GameState
-{
-    MainMenu,
-    Intro,
-    InGame,
-    Paused,
-    GameOver,
-    Quit
+    private void Reset()
+    {
+        score = 0;
+        OnScoreChanged?.Invoke(score);
+        BulletPoolController.instance.Reset();
+        EnemyController.instance.Reset();
+        HelicopterController.instance.Reset();
+    }
 }
