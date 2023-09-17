@@ -22,9 +22,6 @@ public class BulletPoolController : MonoBehaviour
         bulletPool = new ObjectPool<Bullet>(bulletPrefab.GetComponent<Bullet>(), transform, bulletPoolSize);
     }
 
-    void Start()
-    {
-    }
 
     public void SpawnBullet(Vector2 position, Vector2 direction)
     {

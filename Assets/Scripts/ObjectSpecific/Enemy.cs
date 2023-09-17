@@ -22,6 +22,7 @@ public class Enemy : MonoBehaviour
     private void OnEnable()
     {
         SetState(EnemyStates.Parachuting);
+        canAttack = false;
     }
 
     private void OnDisable()
@@ -34,6 +35,8 @@ public class Enemy : MonoBehaviour
         {
             EnemyController.instance.enemyOnRight.Remove(this);
         }
+        SetState(EnemyStates.Parachuting);
+        canAttack = false;
     }
 
     public void SetState(EnemyStates newState)
@@ -128,13 +131,6 @@ public class Enemy : MonoBehaviour
 
     private void FallingExit()
     {
-        if (isTouchingGround || touchingAnotherEnemy)
-        {
-            if (!isDying)
-            {
-                SetState(EnemyStates.Dying);
-            }
-        }
     }
 
     private void IdleEnter()
@@ -222,6 +218,11 @@ public class Enemy : MonoBehaviour
                     SetState(EnemyStates.TouchingBase);
                     return;
                 }
+            }
+            else if(state == EnemyStates.Parachuting)
+            {
+                SetState(EnemyStates.Idle);
+                return;
             }
         }
         else if (collision.gameObject.CompareTag("Ground"))

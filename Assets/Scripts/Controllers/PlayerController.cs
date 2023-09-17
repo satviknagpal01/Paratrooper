@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        turret.transform.Rotate(0, 0, rotateby/20);
+        turret.transform.Rotate(0, 0, rotateby);
         var currentRotation = turret.transform.rotation;
         currentRotation.z = Mathf.Clamp(currentRotation.z, -0.75f, 0.75f);
         turret.transform.rotation = currentRotation;

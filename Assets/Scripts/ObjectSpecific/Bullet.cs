@@ -43,6 +43,7 @@ public class Bullet : MonoBehaviour
             }
             GameManager.instance.UpdateScore(5);
             collision.gameObject.GetComponent<Enemy>().Shot();
+            gameObject.SetActive(false);
         }
     }
 
@@ -56,6 +57,7 @@ public class Bullet : MonoBehaviour
             }
             GameManager.instance.UpdateScore(10);
             collision.gameObject.SetActive(false);
+            gameObject.SetActive(false);
         }
     }
 }

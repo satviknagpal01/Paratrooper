@@ -2371,12 +2371,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Each bullet you fire costs you one point
-
-    PRESS space bar for KEYBOARD
-    PLAY
-
-    OR controller A for Controller PLAY'
+  m_text: Each bullet you fire costs you one point
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 808b706debf52dd4ab50358590215bcf, type: 2}
   m_sharedMaterial: {fileID: 1499546370887532295, guid: 808b706debf52dd4ab50358590215bcf, type: 2}
@@ -4058,12 +4053,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'HELICOPTER or JET : 10 Points
+  m_text: 'HELICOPTER : 10 Points
 
-    ENEMY PARATROOPER : 5 Points
-
-    BOMB
-    : 30 points'
+    ENEMY PARATROOPER : 5 Points'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 808b706debf52dd4ab50358590215bcf, type: 2}
   m_sharedMaterial: {fileID: 1499546370887532295, guid: 808b706debf52dd4ab50358590215bcf, type: 2}

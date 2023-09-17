@@ -74,7 +74,6 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         mainGame.SetActive(false);
-        Reset();
     }
 
     private void PauseGame()
@@ -84,6 +83,7 @@ public class GameManager : MonoBehaviour
 
     private void PlayGame()
     {
+        Reset();
         mainGame.SetActive(true);
     }
 
@@ -96,8 +96,12 @@ public class GameManager : MonoBehaviour
     {
         score = 0;
         OnScoreChanged?.Invoke(score);
-        BulletPoolController.instance.Reset();
-        EnemyController.instance.Reset();
-        HelicopterController.instance.Reset();
+        if(BulletPoolController.instance != null)
+        {
+            BulletPoolController.instance.Reset();
+            EnemyController.instance.Reset();
+            HelicopterController.instance.Reset();
+        }
+        Constants.IsFirstEnemyDead = false;
     }
 }
